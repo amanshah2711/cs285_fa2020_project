@@ -1,0 +1,7 @@
+.idea/
+*.DS_Store
+*.swp
+*.swo
+__pycache__/
+.ipynb_checkpoints/
+env/
