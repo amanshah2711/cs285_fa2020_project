@@ -9,8 +9,8 @@ from gym import Wrapper
 from gym.wrappers.monitoring.video_recorder import VideoRecorder
 import numpy as np
 
-from aprl.common.multi_monitor import MultiMonitor
-from aprl.envs.multi_agent import SingleToMulti, VecMultiWrapper
+#from aprl.common.multi_monitor import MultiMonitor
+from ..envs.multi_agent import SingleToMulti, VecMultiWrapper
 
 
 class VideoWrapper(Wrapper):
@@ -304,7 +304,7 @@ def make_env(
     if out_dir is not None:
         mon_dir = osp.join(out_dir, "mon")
         os.makedirs(mon_dir, exist_ok=True)
-        multi_env = MultiMonitor(multi_env, osp.join(mon_dir, "log{}".format(i)), our_idx)
+        #multi_env = MultiMonitor(multi_env, osp.join(mon_dir, "log{}".format(i)), our_idx) #TODO: Evaluate necessity at later time
 
     multi_env = _apply_wrappers(post_wrappers, multi_env)
 
