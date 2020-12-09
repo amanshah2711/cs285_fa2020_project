@@ -6,13 +6,14 @@ import numpy as np
 from stable_baselines.common.policies import FeedForwardPolicy, nature_cnn
 import tensorflow as tf
 
-from ..envs.wrappers import _filter_dict
+from rlproj.envs.wrappers import _filter_dict
 
 TRANSPARENCY_KEYS = set(["obs", "ff_policy", "ff_value", "hid"])
 
 
 class TransparentPolicy(ABC):
     """Policy which returns its observations and/or activations in its call to self.predict
+
     :param transparent_params: (set) a subset of TRANSPARENCY_KEYS.
            If key is present, that data will be included in the transparency_dict
            returned in step_transparent.
@@ -28,6 +29,7 @@ class TransparentPolicy(ABC):
 
     def _get_default_transparency_dict(self, obs, ff, hid):
         """This structure is typical for subclasses of TransparentPolicy
+
         :param obs: ([float]) array of observations
         :param ff: (dict<str>, [float]) dictionary of lists of feedforward activations.
         :param hid: ([float] or None) LSTM hidden state.

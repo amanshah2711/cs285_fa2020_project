@@ -9,9 +9,9 @@ import stable_baselines
 from stable_baselines.common import vec_env
 import tensorflow as tf
 
-from ..envs.gym_compete import load_zoo_agent
-from ..envs.multi_agent import FakeSingleSpacesVec
-from .base import (
+from rlproj.envs.gym_compete import load_zoo_agent
+from rlproj.envs.multi_agent import FakeSingleSpacesVec
+from rlproj.policies.base import (
     ModelWrapper,
     OpenAIToStablePolicy,
     PolicyToModel,
@@ -19,7 +19,7 @@ from .base import (
     ZeroPolicy,
 )
 
-pylog = logging.getLogger("aprl.policy_loader")
+pylog = logging.getLogger("rlproj.policy_loader")
 
 
 class NormalizeModel(ModelWrapper):
@@ -178,12 +178,12 @@ def load_backward_compatible_model(cls, root_dir, denv=None, **kwargs):
     """Backwards compatibility hack to load old pickled policies
     which still expect modelfree.* to exist.
     """
-    import aprl.training.scheduling  # noqa: F401
+    import rlproj.training.scheduling  # noqa: F401
 
     mock_modules = {
-        "modelfree": "aprl",
-        "modelfree.scheduling": "aprl.training.scheduling",
-        "modelfree.training.scheduling": "aprl.training.scheduling",
+        "modelfree": "rlproj",
+        "modelfree.scheduling": "rlproj.training.scheduling",
+        "modelfree.training.scheduling": "rlproj.training.scheduling",
     }
     for old, new in mock_modules.items():
         sys.modules[old] = sys.modules[new]

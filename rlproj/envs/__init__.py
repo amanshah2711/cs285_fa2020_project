@@ -9,7 +9,7 @@ from pkg_resources import resource_filename
 def register(id, **kwargs):
     """Idempotent version of gym.envs.registration.registry.
 
-    Needed since aprl.envs can get imported multiple times, e.g. when deserializing policies.
+    Needed since rlproj.envs can get imported multiple times, e.g. when deserializing policies.
     """
     try:
         existing_spec = registration.spec(id)
@@ -20,36 +20,34 @@ def register(id, **kwargs):
 
 
 # Low-dimensional multi-agent environments
-"""
+
 register(
-    id="aprl/CrowdedLine-v0",
-    entry_point="aprl.envs.crowded_line:CrowdedLineEnv",
+    id="rlproj/CrowdedLine-v0",
+    entry_point="rlproj.envs.crowded_line:CrowdedLineEnv",
     max_episode_steps=200,
     reward_threshold=0,
     kwargs={"num_agents": 3},
 )
 
 register(
-    id="aprl/IteratedMatchingPennies-v0",
-    entry_point="aprl.envs.matrix_game:IteratedMatchingPenniesEnv",
+    id="rlproj/IteratedMatchingPennies-v0",
+    entry_point="rlproj.envs.matrix_game:IteratedMatchingPenniesEnv",
     max_episode_steps=200,
     reward_threshold=100,
 )
 
 register(
-    id="aprl/RockPaperScissors-v0",
-    entry_point="aprl.envs.matrix_game:RockPaperScissorsEnv",
+    id="rlproj/RockPaperScissors-v0",
+    entry_point="rlproj.envs.matrix_game:RockPaperScissorsEnv",
     max_episode_steps=200,
     reward_threshold=100,
 )
-I dont think this is needed Aman
-"""
-#TODO: REVISIT
+
 # Our variants of environments from gym_compete
 
 register(
     id="multicomp/SumoHumansAutoContact-v0",
-    entry_point="aprl.envs.sumo_auto_contact:SumoAutoContactEnv",
+    entry_point="rlproj.envs.sumo_auto_contact:SumoAutoContactEnv",
     kwargs={
         "agent_names": ["humanoid_fighter", "humanoid_fighter"],
         "scene_xml_path": resource_filename(
@@ -64,7 +62,7 @@ register(
 
 register(
     id="multicomp/SumoAntsAutoContact-v0",
-    entry_point="aprl.envs.sumo_auto_contact:SumoAutoContactEnv",
+    entry_point="rlproj.envs.sumo_auto_contact:SumoAutoContactEnv",
     kwargs={
         "agent_names": ["ant_fighter", "ant_fighter"],
         "scene_xml_path": resource_filename(

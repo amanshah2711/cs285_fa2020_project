@@ -18,11 +18,11 @@ import stable_baselines
 def main():
 
     #logger = setup_logger() #TODO: MAKE WORK
-    env = utils.build_multi_env("multicomp/KickAndDefend-v0", 2, 0, False)
+    env = utils.build_multi_env("multicomp/SumoHumans-v0", 2, 0, False)
 
-    random_policy = load_policy('zoo', 1, env,"multicomp/KickAndDefend-v0" , 0)
+    random_policy = load_policy('ppo2', '', env,"multicomp/SumoHumans-v0" , 0)
     env = CurryVecEnv(env, random_policy)
-    item = env.get_policy().policy_obj
+    item = env.get_policy()
     load_params(item, '')
     env = FlattenSingletonVecEnv(env)
     for _ in range(1000):

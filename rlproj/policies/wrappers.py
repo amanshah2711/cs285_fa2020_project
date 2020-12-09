@@ -3,8 +3,8 @@ from typing import List, Optional, Sequence, Tuple, TypeVar
 import numpy as np
 from stable_baselines.common.base_class import BaseRLModel
 
+from rlproj.policies import base
 
-from ..policies import base
 
 class NoisyAgentWrapper(base.ModelWrapper):
     def __init__(self, model: BaseRLModel, noise_annealer, noise_type: str = "gaussian"):
@@ -44,6 +44,7 @@ T = TypeVar("T")
 
 def _array_mask_assign(arr: List[T], mask: Sequence[bool], vals: Optional[List[T]]) -> List[T]:
     """Assign val to indices of `arr` that are True in `mask`.
+
     :param arr: a Python list.
     :param mask: a list of boolean values of the same length as `arr`.
     :param vals: value to assign.
@@ -63,9 +64,11 @@ def _standardize_state(
     state_arr: Sequence[np.ndarray], mask: Sequence[bool], filler_shape: Optional[Tuple[int, ...]]
 ) -> Optional[np.ndarray]:
     """Replaces values in state_arr[env_mask] with a filler value.
+
     The returned value should have entries of a consistent type, suitable to pass to a policy.
     The input `state_arr` may contain entries produced by different policies, which may include
     `None` values and NumPy arrays of various shapes.
+
     :param state_arr: The state from the previous timestep.
     :param mask: Mask of indices to replace with filler values. These should be environments
         the policy does not control -- so it does not matter what output it produces.
@@ -93,12 +96,15 @@ def _standardize_state(
 
 class MultiPolicyWrapper(base.ModelWrapper):
     """Combines multiple policies into a single policy.
+
     Each policy executes for the entirety of an episode, and then a new policy is randomly
     selected from the list of policies.
+
     WARNING: Only suitable for inference, not for training!"""
 
     def __init__(self, policies: Sequence[BaseRLModel], num_envs: int):
         """Creates MultiPolicyWrapper.
+
         :param policies: The underlying policies to execute.
         :param num_envs: The number of environments to execute in parallel.
         """

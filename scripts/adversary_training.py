@@ -39,7 +39,7 @@ from rlproj.utils.scheduling_utils import ConstantAnnealer, Scheduler
 from rlproj.utils.shaping_wrappers import apply_embedded_agent_wrapper, apply_reward_wrapper
 
 train_ex = Experiment("train")
-pylog = logging.getLogger("aprl.train")
+pylog = logging.getLogger("rlproj.train")
 
 
 SaveCallback = Callable[[str], None]
@@ -48,6 +48,7 @@ SaveCallback = Callable[[str], None]
 def _save(model, root_dir: str, save_callbacks: Iterable[SaveCallback]) -> None:
     os.makedirs(root_dir, exist_ok=True)
     model_path = osp.join(root_dir, "model.pkl")
+    import pdb; pdb.set_trace()
     model.save(model_path)
     for f in save_callbacks:
         f(root_dir)
@@ -217,7 +218,7 @@ def _get_mpi_num_proc():
 
 @train_ex.capture
 def gail(batch_size, learning_rate, expert_dataset_path, **kwargs):
-    from aprl.training.gail_dataset import ExpertDatasetFromOurFormat
+    from rlproj.training.gail_dataset import ExpertDatasetFromOurFormat
 
     num_proc = _get_mpi_num_proc()
     if expert_dataset_path is None:
@@ -293,7 +294,7 @@ def train_config():
     # Embedded Agent Config
     # Typically this is the victim, but for victim hardening this could be the adversary
     embed_index = 0  # index embedded agent plays as
-    embed_type = None  # any type supported by aprl.policies.loader
+    embed_type = None  # any type supported by rlproj.policies.loader
     embed_path = None  # path or other unique identifier
     embed_types = None  # list of types for embedded agents
     embed_paths = None  # list of paths for embedded agents
@@ -326,7 +327,7 @@ def train_config():
 def adversary_policy_config(rl_algo, embed_type, embed_path):
     load_policy = {  # fine-tune this policy
         "path": None,  # path with policy weights
-        "type": rl_algo,  # type supported by aprl.policies.loader
+        "type": rl_algo,  # type supported by rlproj.policies.loader
     }
     adv_noise_params = {  # param dict for epsilon-ball noise policy added to zoo policy
         "noise_val": None,  # size of noise ball. Set to nonnegative float to activate.
@@ -352,7 +353,7 @@ DEFAULT_CONFIGS = {}
 def load_default(env_name, config_dir):
     default_config = DEFAULT_CONFIGS.get(env_name, "default.json")
     fname = os.path.join("configs", config_dir, default_config)
-    config = pkgutil.get_data("aprl", fname)
+    config = pkgutil.get_data("rlproj", fname)
     return json.loads(config)
 
 
@@ -424,7 +425,7 @@ def build_env(
         our_idx = 1 - embed_index
 
     def env_fn(i):
-        return aprl.envs.wrappers.make_env(
+        return rlproj.envs.wrappers.make_env(
             env_name,
             _seed,
             i,

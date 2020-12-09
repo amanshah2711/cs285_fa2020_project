@@ -11,6 +11,7 @@ import tensorflow as tf
 
 class PredictOnlyModel(BaseRLModel):
     """Abstract class for policies pretending to be RL algorithms (models).
+
     Provides stub implementations that raise NotImplementedError.
     The predict method is left as abstract and must be implemented in base class."""
 

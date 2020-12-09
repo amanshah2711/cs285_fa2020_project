@@ -7,12 +7,11 @@ import pkgutil
 from gym_compete import policy
 import tensorflow as tf
 
-from ..utils.tf_utils import make_session
-from ..policies import base, transparent
+from rlproj.common.utils import make_session
+from rlproj.envs import multi_agent
+from rlproj.policies import base, transparent
 
-from .multi_agent import VecMultiWrapper
-
-pylog = logging.getLogger("aprl.envs.gym_compete")
+pylog = logging.getLogger("rlproj.envs.gym_compete")
 
 POLICY_STATEFUL = OrderedDict(
     [
@@ -52,7 +51,7 @@ def game_outcome(info):
         return None
 
 
-class GameOutcomeMonitor(VecMultiWrapper):
+class GameOutcomeMonitor(multi_agent.VecMultiWrapper):
     def __init__(self, venv):
         super().__init__(venv)
         self.outcomes = []
