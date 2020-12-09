@@ -64,16 +64,17 @@ class SwapCallback(callbacks.BaseCallback):
         self.model_dir = os.path.join(model_dir, 'checkpoint')
         self.opponent_sampler = opponent_sampler
 
-    def _on_step(self) -> None: #TODO: Change these to end of rollout
+    def _on_rollout_end(self) -> None:
         potential_opps = [item for item in os.listdir(self.model_dir) if item != 'mon'] #exclude monitoring
         import pdb; pdb.set_trace()
         new_opponent = self.opponent_sampler(potential_opps)
         item = self.model.get_env()._policy
         load_params(item, os.path.join(self.model_dir, new_opponent))
 
+
 class RetrainCallback(callbacks.BaseCallback):
 
-    def __init__(self, total_timesteps, lr, embed_type, embed_path, rl_algo, embed_types, embed_paths, embed_index, out_dir, cls, *args, **kwargs):
+    def __init__(self, total_timesteps, lr, embed_type, embed_path, rl_algo, embed_types, embed_paths, embed_index, out_dir, freq, cls, *args, **kwargs):
         super(RetrainCallback, self).__init__(*args, **kwargs)
         self.out_dir = os.path.join(out_dir, 'checkpoint')
         self.embed_path = embed_path
@@ -86,13 +87,15 @@ class RetrainCallback(callbacks.BaseCallback):
         self.rl_algo = rl_algo
         self.total_timesteps = int((total_timesteps * 0.03) // 100)
         self.num_retrain = 1
+        self.freq = freq
+
     def _on_step(self) -> bool:
-        env = self.build_minimal_env()
-        train_fn = RL_ALGOS[self.rl_algo]
-        out_dir = os.path.join(self.out_dir, 'retrain_' + str(self.num_retrain))
-        import pdb; pdb.set_trace()
-        train_fn(env=env, total_timesteps=self.total_timesteps, retrain=False, out_dir=out_dir, logger=None,log_callbacks=[],save_callbacks=[], extra_info={}, checkpoint_interval=float('inf'))
-        self.num_retrain += 1
+        if self.n_calls % self.freq == 0:
+            env = self.build_minimal_env()
+            train_fn = RL_ALGOS[self.rl_algo]
+            out_dir = os.path.join(self.out_dir, 'retrain_' + str(self.num_retrain))
+            train_fn(env=env, total_timesteps=self.total_timesteps, retrain=False, out_dir=out_dir, logger=None,log_callbacks=[],save_callbacks=[], extra_info={}, checkpoint_interval=float('inf'))
+            self.num_retrain += 1
 
 def _save(model, root_dir: str, save_callbacks: Iterable[SaveCallback]) -> None:
     os.makedirs(root_dir, exist_ok=True)
@@ -219,6 +222,8 @@ def _stable(
         save_callbacks,
         log_interval,
         checkpoint_interval,
+        extra_info,
+        retrain,
         **kwargs,
 ):
     kwargs = dict(env=env, verbose=1 if not debug else 2, **kwargs, **rl_args)
@@ -247,10 +252,20 @@ def _stable(
     log_callback = callbacks.EveryNTimesteps(
         n_steps=log_interval, callback=callbacks.CallbackList(log_callbacks)
     )
-    callback = callbacks.CallbackList([checkpoint_callback, log_callback])
+    callback_list = [checkpoint_callback, log_callback]
+    if retrain:
+        swap_callback = SwapCallback(out_dir, random_opponent)
+        swap_callback = callbacks.EveryNTimesteps(n_steps=checkpoint_interval, callback=swap_callback)
+        retrain_callback = RetrainCallback(embed_type=extra_info['embed_type'], embed_types=extra_info['embed_types'], embed_path=extra_info['embed_path'], embed_paths=extra_info['embed_paths'], embed_index=1-embed_index, lr=extra_info['lr'], out_dir=out_dir, cls=cls, rl_algo=extra_info['rl_algo'], total_timesteps=total_timesteps)
+        callback_list.extend([swap_callback, retrain_callback])
+        #callback_list.extend([ retrain_callback])
+    callback = callbacks.CallbackList(callback_list)
 
     model.learn(total_timesteps=total_timesteps, log_interval=1, callback=callback)
-    final_path = osp.join(out_dir, "final_model")
+    if retrain:
+        final_path = osp.join(out_dir, "final_model")
+    else:
+        final_path = out_dir
     _save(model, final_path, save_callbacks)
     model.sess.close()
     return final_path
@@ -269,7 +284,7 @@ def _get_mpi_num_proc():
 
 @train_ex.capture
 def gail(batch_size, learning_rate, expert_dataset_path, **kwargs):
-    from rlproj.training.gail_dataset import ExpertDatasetFromOurFormat
+    from aprl.training.gail_dataset import ExpertDatasetFromOurFormat
 
     num_proc = _get_mpi_num_proc()
     if expert_dataset_path is None:
@@ -345,8 +360,8 @@ def train_config():
     # Embedded Agent Config
     # Typically this is the victim, but for victim hardening this could be the adversary
     embed_index = 0  # index embedded agent plays as
-    embed_type = None  # any type supported by rlproj.policies.loader
-    embed_path = None  # path or other unique identifier
+    embed_type = 'ppo2'# any type supported by aprl.policies.loader
+    embed_path = '' # path or other unique identifier
     embed_types = None  # list of types for embedded agents
     embed_paths = None  # list of paths for embedded agents
 
@@ -363,10 +378,11 @@ def train_config():
     normalize = True  # normalize environment reward
     normalize_observations = True  # if normalize, then normalize environments observations too
     rl_args = dict()  # algorithm-specific arguments
+    retrain=True
 
     # General
-    checkpoint_interval = 131072  # save weights to disk after this many timesteps
-    log_interval = 2048  # log statistics to disk after this many timesteps
+    checkpoint_interval = 3# save weights to disk after this many timesteps
+    log_interval = 1  # log statistics to disk after this many timesteps
     log_output_formats = None  # custom output formats for logging
     debug = False  # debug mode; may run more slowly
     seed = 0  # random seed
@@ -378,7 +394,7 @@ def train_config():
 def adversary_policy_config(rl_algo, embed_type, embed_path):
     load_policy = {  # fine-tune this policy
         "path": None,  # path with policy weights
-        "type": rl_algo,  # type supported by rlproj.policies.loader
+        "type": rl_algo,  # type supported by aprl.policies.loader
     }
     adv_noise_params = {  # param dict for epsilon-ball noise policy added to zoo policy
         "noise_val": None,  # size of noise ball. Set to nonnegative float to activate.
@@ -404,7 +420,7 @@ DEFAULT_CONFIGS = {}
 def load_default(env_name, config_dir):
     default_config = DEFAULT_CONFIGS.get(env_name, "default.json")
     fname = os.path.join("configs", config_dir, default_config)
-    config = pkgutil.get_data("rlproj", fname)
+    config = pkgutil.get_data("aprl", fname)
     return json.loads(config)
 
 
@@ -476,7 +492,7 @@ def build_env(
         our_idx = 1 - embed_index
 
     def env_fn(i):
-        return rlproj.envs.wrappers.make_env(
+        return aprl.envs.wrappers.make_env(
             env_name,
             _seed,
             i,
@@ -635,6 +651,7 @@ def single_wrappers(
             shaping_params=rew_shape_params,
             agent_idx=our_idx,
         )
+        import pdb; pdb.set_trace()
         log_callbacks.append(LoggerOnlyLogCallback(rew_shape_venv))
         single_venv = rew_shape_venv
 
@@ -709,7 +726,10 @@ def resolve_embed(embed_type, embed_path, embed_types, embed_paths, adv_noise_pa
     if embed_type is None:
         embed_type = "zoo"
         adv_noise_params["base_type"] = embed_type
-    if embed_path is None:
+    if embed_path is None and embed_type != 'zoo':
+        embed_path=None
+        adv_noise_params["base_path"] = embed_path
+    if embed_path is None and embed_type == 'zoo':
         embed_path = "1"
         adv_noise_params["base_path"] = embed_path
     if embed_types is None and embed_paths is None:
@@ -747,6 +767,7 @@ def train(
 
     multi_venv, our_idx = build_env(out_dir, embed_types=embed_types)
     multi_venv = multi_wrappers(multi_venv, log_callbacks=log_callbacks)
+
     multi_venv = maybe_embed_agent(
         multi_venv,
         our_idx,
@@ -757,6 +778,7 @@ def train(
         adv_noise_params=adv_noise_params,
     )
     single_venv = FlattenSingletonVecEnv(multi_venv)
+
     single_venv = single_wrappers(
         single_venv,
         scheduler,
@@ -766,6 +788,7 @@ def train(
         embed_paths=embed_paths,
         embed_types=embed_types,
     )
+    import pdb; pdb.set_trace()
 
     train_fn = RL_ALGOS[rl_algo]
     res = train_fn(
@@ -775,6 +798,15 @@ def train(
         logger=logger,
         log_callbacks=log_callbacks,
         save_callbacks=save_callbacks,
+        extra_info={
+            'embed_types':embed_types,
+            'embed_type':embed_type,
+            'embed_path':embed_path,
+            'embed_paths':embed_paths,
+            'lr':learning_rate,
+            'our_idx':our_idx,
+            'rl_algo': rl_algo
+        }
     )
     single_venv.close()
 
