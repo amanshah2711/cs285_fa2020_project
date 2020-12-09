@@ -1,4 +1,4 @@
-"""Uses PPO to train a policy using iterative retraining or self-play in a multi-agent environment"""
+"""Uses PPO to training an attack policy against a fixed, embedded policy."""
 
 import functools
 import json
@@ -45,17 +45,6 @@ pylog = logging.getLogger("rlproj.train")
 
 SaveCallback = Callable[[str], None]
 
-def random_opponent(options):
-    if options == []:
-        print('Warning there are no checkpoints at this point in your checkpoint directory')
-    return np.random.choice(options)
-
-
-def load_params(model,  loc):
-    path = os.path.join(loc, 'model.pkl')
-    data, params = BaseRLModel._load_from_file(path)
-    model.load_parameters(params)
-
 class SwapCallback(callbacks.BaseCallback):
     """Designed to be used with CurryVecEnv to swap the opponent policy periodically through some opponent sampling strategy"""
 
@@ -64,7 +53,7 @@ class SwapCallback(callbacks.BaseCallback):
         self.model_dir = os.path.join(model_dir, 'checkpoint')
         self.opponent_sampler = opponent_sampler
 
-    def _on_rollout_end(self) -> None:
+    def _on_step(self) -> None: #TODO: Change these to end of rollout
         potential_opps = [item for item in os.listdir(self.model_dir) if item != 'mon'] #exclude monitoring
         import pdb; pdb.set_trace()
         new_opponent = self.opponent_sampler(potential_opps)
@@ -74,7 +63,7 @@ class SwapCallback(callbacks.BaseCallback):
 
 class RetrainCallback(callbacks.BaseCallback):
 
-    def __init__(self, total_timesteps, lr, embed_type, embed_path, rl_algo, embed_types, embed_paths, embed_index, out_dir, freq, cls, *args, **kwargs):
+    def __init__(self, total_timesteps, lr, embed_type, embed_path, rl_algo, embed_types, embed_paths, embed_index, out_dir, cls, *args, **kwargs):
         super(RetrainCallback, self).__init__(*args, **kwargs)
         self.out_dir = os.path.join(out_dir, 'checkpoint')
         self.embed_path = embed_path
@@ -87,18 +76,16 @@ class RetrainCallback(callbacks.BaseCallback):
         self.rl_algo = rl_algo
         self.total_timesteps = int((total_timesteps * 0.03) // 100)
         self.num_retrain = 1
-        self.freq = freq
-
     def _on_step(self) -> bool:
-        if self.n_calls % self.freq == 0:
-            env = self.build_minimal_env()
-            train_fn = RL_ALGOS[self.rl_algo]
-            out_dir = os.path.join(self.out_dir, 'retrain_' + str(self.num_retrain))
-            train_fn(env=env, total_timesteps=self.total_timesteps, retrain=False, out_dir=out_dir, logger=None,log_callbacks=[],save_callbacks=[], extra_info={}, checkpoint_interval=float('inf'))
-            self.num_retrain += 1
+        env = self.build_minimal_env()
+        train_fn = RL_ALGOS[self.rl_algo]
+        out_dir = os.path.join(self.out_dir, 'retrain_' + str(self.num_retrain))
+        import pdb; pdb.set_trace()
+        train_fn(env=env, total_timesteps=self.total_timesteps, retrain=False, out_dir=out_dir, logger=None,log_callbacks=[],save_callbacks=[], extra_info={}, checkpoint_interval=float('inf'))
+        self.num_retrain += 1
 
     def build_minimal_env(self):
-        multi_venv, our_idx = build_env(out_dir=self.out_dir, embed_index=self.embed_index, embed_types=self.embed_types)
+        multi_venv, our_idx= build_env(out_dir=self.out_dir, embed_index=self.embed_index, embed_types=self.embed_types)
         log_callbacks = []
         scheduler = Scheduler(annealer_dict={"lr": ConstantAnnealer(self.lr)})
         multi_venv = maybe_embed_agent(
@@ -112,6 +99,17 @@ class RetrainCallback(callbacks.BaseCallback):
         single_venv = FlattenSingletonVecEnv(multi_venv)
         return single_venv
 
+
+def random_opponent(options):
+    if options == []:
+        print('Warning there are no checkpoints at this point in your checkpoint directory')
+    return np.random.choice(options)
+
+
+def load_params(model,  loc):
+    path = os.path.join(loc, 'model.pkl')
+    data, params = BaseRLModel._load_from_file(path)
+    model.load_parameters(params)
 
 def _save(model, root_dir: str, save_callbacks: Iterable[SaveCallback]) -> None:
     os.makedirs(root_dir, exist_ok=True)
@@ -139,6 +137,10 @@ class CheckpointCallback(callbacks.BaseCallback):
 
     def _on_step(self) -> bool:
         checkpoint_dir = osp.join(self.out_dir, "checkpoint", f"{self.num_timesteps:012}")
+        print('wrap')
+        print(self.out_dir)
+        print(checkpoint_dir)
+        print('wrap')
         _save(self.model, checkpoint_dir, self.save_callbacks)
         return True
 
@@ -158,19 +160,19 @@ class LoggerOnlyLogCallback(callbacks.BaseCallback):
 
 @train_ex.capture
 def old_ppo2(
-        _seed,
-        env,
-        out_dir,
-        total_timesteps,
-        num_env,
-        policy,
-        batch_size,
-        load_policy,
-        learning_rate,
-        rl_args,
-        logger,
-        log_callbacks,
-        save_callbacks,
+    _seed,
+    env,
+    out_dir,
+    total_timesteps,
+    num_env,
+    policy,
+    batch_size,
+    load_policy,
+    learning_rate,
+    rl_args,
+    logger,
+    log_callbacks,
+    save_callbacks,
 ):
     try:
         from baselines.ppo2 import ppo2 as ppo2_old
@@ -219,28 +221,28 @@ def old_ppo2(
 
 @train_ex.capture
 def _stable(
-        cls,
-        our_type,
-        callback_key,
-        callback_mul,
-        _seed,
-        env,
-        env_name,
-        out_dir,
-        total_timesteps,
-        policy,
-        load_policy,
-        rl_args,
-        embed_index,
-        debug,
-        logger,
-        log_callbacks,
-        save_callbacks,
-        log_interval,
-        checkpoint_interval,
-        extra_info,
-        retrain,
-        **kwargs,
+    cls,
+    our_type,
+    callback_key,
+    callback_mul,
+    _seed,
+    env,
+    env_name,
+    out_dir,
+    total_timesteps,
+    policy,
+    load_policy,
+    rl_args,
+    embed_index,
+    debug,
+    logger,
+    log_callbacks,
+    save_callbacks,
+    log_interval,
+    checkpoint_interval,
+    extra_info,
+    retrain,
+    **kwargs,
 ):
     kwargs = dict(env=env, verbose=1 if not debug else 2, **kwargs, **rl_args)
 
@@ -272,7 +274,7 @@ def _stable(
     if retrain:
         swap_callback = SwapCallback(out_dir, random_opponent)
         swap_callback = callbacks.EveryNTimesteps(n_steps=checkpoint_interval, callback=swap_callback)
-        retrain_callback = RetrainCallback(embed_type=extra_info['embed_type'], embed_types=extra_info['embed_types'], embed_path=extra_info['embed_path'], embed_paths=extra_info['embed_paths'], embed_index=1-embed_index, lr=extra_info['lr'], out_dir=out_dir, cls=cls, rl_algo=extra_info['rl_algo'], total_timesteps=total_timesteps, freq = extra_info['retrain_freq'])
+        retrain_callback = RetrainCallback(embed_type=extra_info['embed_type'], embed_types=extra_info['embed_types'], embed_path=extra_info['embed_path'], embed_paths=extra_info['embed_paths'], embed_index=1-embed_index, lr=extra_info['lr'], out_dir=out_dir, cls=cls, rl_algo=extra_info['rl_algo'], total_timesteps=total_timesteps)
         callback_list.extend([swap_callback, retrain_callback])
         #callback_list.extend([ retrain_callback])
     callback = callbacks.CallbackList(callback_list)
@@ -395,7 +397,6 @@ def train_config():
     normalize_observations = True  # if normalize, then normalize environments observations too
     rl_args = dict()  # algorithm-specific arguments
     retrain=True
-    retrain_freq = 1
 
     # General
     checkpoint_interval = 3# save weights to disk after this many timesteps
@@ -484,16 +485,16 @@ def paper():
 
 @train_ex.capture
 def build_env(
-        out_dir,
-        _seed,
-        env_name,
-        num_env,
-        embed_types,
-        embed_index,
-        mask_embed,
-        mask_embed_kwargs,
-        lookback_params,
-        debug,
+    out_dir,
+    _seed,
+    env_name,
+    num_env,
+    embed_types,
+    embed_index,
+    mask_embed,
+    mask_embed_kwargs,
+    lookback_params,
+    debug,
 ):
     pre_wrappers = []
     if lookback_params["lb_num"] > 0:
@@ -576,19 +577,19 @@ def wrap_adv_noise_ball(env_name, our_idx, multi_venv, adv_noise_params, determi
 
 @train_ex.capture
 def maybe_embed_agent(
-        multi_venv,
-        our_idx,
-        scheduler,
-        log_callbacks,
-        env_name,
-        embed_types,
-        embed_paths,
-        embed_index,
-        embed_noise,
-        embed_noise_params,
-        adv_noise_params,
-        transparent_params,
-        lookback_params,
+    multi_venv,
+    our_idx,
+    scheduler,
+    log_callbacks,
+    env_name,
+    embed_types,
+    embed_paths,
+    embed_index,
+    embed_noise,
+    embed_noise_params,
+    adv_noise_params,
+    transparent_params,
+    lookback_params,
 ):
     if len(embed_types) > 0:
         deterministic = lookback_params is not None
@@ -643,23 +644,23 @@ def maybe_embed_agent(
 
 @train_ex.capture
 def single_wrappers(
-        single_venv,
-        scheduler,
-        our_idx,
-        normalize,
-        normalize_observations,
-        rew_shape,
-        rew_shape_params,
-        embed_index,
-        embed_paths,
-        embed_types,
-        debug,
-        env_name,
-        load_policy,
-        lookback_params,
-        transparent_params,
-        log_callbacks,
-        save_callbacks,
+    single_venv,
+    scheduler,
+    our_idx,
+    normalize,
+    normalize_observations,
+    rew_shape,
+    rew_shape_params,
+    embed_index,
+    embed_paths,
+    embed_types,
+    debug,
+    env_name,
+    load_policy,
+    lookback_params,
+    transparent_params,
+    log_callbacks,
+    save_callbacks,
 ):
     if rew_shape:
         rew_shape_venv = apply_reward_wrapper(
@@ -758,19 +759,18 @@ def resolve_embed(embed_type, embed_path, embed_types, embed_paths, adv_noise_pa
 
 @train_ex.main
 def train(
-        _run,
-        root_dir,
-        exp_name,
-        num_env,
-        rl_algo,
-        learning_rate,
-        log_output_formats,
-        embed_type,
-        embed_path,
-        embed_types,
-        embed_paths,
-        adv_noise_params,
-        retrain_freq
+    _run,
+    root_dir,
+    exp_name,
+    num_env,
+    rl_algo,
+    learning_rate,
+    log_output_formats,
+    embed_type,
+    embed_path,
+    embed_types,
+    embed_paths,
+    adv_noise_params,
 ):
     embed_types, embed_paths, adv_noise_params = resolve_embed(
         embed_type, embed_path, embed_types, embed_paths, adv_noise_params
@@ -817,15 +817,14 @@ def train(
         log_callbacks=log_callbacks,
         save_callbacks=save_callbacks,
         extra_info={
-            'embed_types':embed_types,
-            'embed_type':embed_type,
-            'embed_path':embed_path,
-            'embed_paths':embed_paths,
-            'lr':learning_rate,
-            'our_idx':our_idx,
-            'rl_algo': rl_algo,
-            'retrain_freq':retrain_freq
-        }
+        'embed_types':embed_types,
+        'embed_type':embed_type,
+        'embed_path':embed_path,
+        'embed_paths':embed_paths,
+        'lr':learning_rate,
+        'our_idx':our_idx,
+        'rl_algo': rl_algo
+    }
     )
     single_venv.close()
 

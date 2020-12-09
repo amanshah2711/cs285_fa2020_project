@@ -1,0 +1,62 @@
+{
+  "adv_noise_params": {
+    "base_path": "",
+    "base_type": "ppo2",
+    "noise_val": null
+  },
+  "batch_size": 2048,
+  "checkpoint_interval": 3,
+  "debug": false,
+  "embed_index": 0,
+  "embed_noise": false,
+  "embed_noise_params": {
+    "anneal_frac": 0.5,
+    "param": 0.5
+  },
+  "embed_path": "",
+  "embed_paths": null,
+  "embed_type": "ppo2",
+  "embed_types": null,
+  "env_name": "multicomp/SumoHumans-v0",
+  "exp_name": "default",
+  "expert_dataset_path": null,
+  "learning_rate": 0.0003,
+  "load_policy": {
+    "path": null,
+    "type": "ppo2"
+  },
+  "log_interval": 1,
+  "log_output_formats": null,
+  "lookback_params": {
+    "lb_mul": 0.05,
+    "lb_num": 0,
+    "lb_path": null,
+    "lb_type": "ppo2"
+  },
+  "mask_embed": false,
+  "mask_embed_kwargs": {
+    "masking_type": "initialization"
+  },
+  "normalize": true,
+  "normalize_observations": true,
+  "num_env": 8,
+  "policy": "MlpPolicy",
+  "retrain": true,
+  "rew_shape": true,
+  "rew_shape_params": {
+    "weights": {
+      "dense": {
+        "reward_move": 0.1
+      },
+      "sparse": {
+        "reward_remaining": 0.01
+      }
+    }
+  },
+  "rl_algo": "ppo2",
+  "rl_args": {},
+  "root_dir": "data/baselines",
+  "seed": 0,
+  "total_timesteps": 4096,
+  "transparent_params": null
+}

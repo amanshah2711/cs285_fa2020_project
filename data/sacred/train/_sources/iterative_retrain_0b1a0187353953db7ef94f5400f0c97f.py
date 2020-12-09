@@ -97,22 +97,6 @@ class RetrainCallback(callbacks.BaseCallback):
             train_fn(env=env, total_timesteps=self.total_timesteps, retrain=False, out_dir=out_dir, logger=None,log_callbacks=[],save_callbacks=[], extra_info={}, checkpoint_interval=float('inf'))
             self.num_retrain += 1
 
-    def build_minimal_env(self):
-        multi_venv, our_idx = build_env(out_dir=self.out_dir, embed_index=self.embed_index, embed_types=self.embed_types)
-        log_callbacks = []
-        scheduler = Scheduler(annealer_dict={"lr": ConstantAnnealer(self.lr)})
-        multi_venv = maybe_embed_agent(
-            multi_venv,
-            our_idx,
-            scheduler,
-            embed_types=self.embed_types,
-            embed_paths=self.embed_paths,
-            log_callbacks=log_callbacks
-        )
-        single_venv = FlattenSingletonVecEnv(multi_venv)
-        return single_venv
-
-
 def _save(model, root_dir: str, save_callbacks: Iterable[SaveCallback]) -> None:
     os.makedirs(root_dir, exist_ok=True)
     model_path = osp.join(root_dir, "model.pkl")

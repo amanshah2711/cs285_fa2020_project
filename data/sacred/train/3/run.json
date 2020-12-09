@@ -1,0 +1,238 @@
+{
+  "artifacts": [],
+  "command": "train",
+  "experiment": {
+    "base_dir": "/Users/amanshah/Desktop/cs285_fa2020_project/rlproj",
+    "dependencies": [
+      "gym==0.15.4",
+      "numpy==1.19.2",
+      "sacred==0.8.1",
+      "stable-baselines==2.10.1",
+      "tensorflow==1.15.0"
+    ],
+    "mainfile": "iterative_retrain.py",
+    "name": "train",
+    "repositories": [
+      {
+        "commit": "12fe53f72d161ce3ce9299c29b78b96626ec1ee8",
+        "dirty": true,
+        "url": "https://github.com/amanshah2711/cs285_fa2020_project.git"
+      },
+      {
+        "commit": "12fe53f72d161ce3ce9299c29b78b96626ec1ee8",
+        "dirty": true,
+        "url": "https://github.com/amanshah2711/cs285_fa2020_project.git"
+      },
+      {
+        "commit": "12fe53f72d161ce3ce9299c29b78b96626ec1ee8",
+        "dirty": true,
+        "url": "https://github.com/amanshah2711/cs285_fa2020_project.git"
+      },
+      {
+        "commit": "12fe53f72d161ce3ce9299c29b78b96626ec1ee8",
+        "dirty": true,
+        "url": "https://github.com/amanshah2711/cs285_fa2020_project.git"
+      },
+      {
+        "commit": "12fe53f72d161ce3ce9299c29b78b96626ec1ee8",
+        "dirty": true,
+        "url": "https://github.com/amanshah2711/cs285_fa2020_project.git"
+      },
+      {
+        "commit": "12fe53f72d161ce3ce9299c29b78b96626ec1ee8",
+        "dirty": true,
+        "url": "https://github.com/amanshah2711/cs285_fa2020_project.git"
+      },
+      {
+        "commit": "12fe53f72d161ce3ce9299c29b78b96626ec1ee8",
+        "dirty": true,
+        "url": "https://github.com/amanshah2711/cs285_fa2020_project.git"
+      },
+      {
+        "commit": "12fe53f72d161ce3ce9299c29b78b96626ec1ee8",
+        "dirty": true,
+        "url": "https://github.com/amanshah2711/cs285_fa2020_project.git"
+      },
+      {
+        "commit": "12fe53f72d161ce3ce9299c29b78b96626ec1ee8",
+        "dirty": true,
+        "url": "https://github.com/amanshah2711/cs285_fa2020_project.git"
+      },
+      {
+        "commit": "12fe53f72d161ce3ce9299c29b78b96626ec1ee8",
+        "dirty": true,
+        "url": "https://github.com/amanshah2711/cs285_fa2020_project.git"
+      },
+      {
+        "commit": "12fe53f72d161ce3ce9299c29b78b96626ec1ee8",
+        "dirty": true,
+        "url": "https://github.com/amanshah2711/cs285_fa2020_project.git"
+      },
+      {
+        "commit": "12fe53f72d161ce3ce9299c29b78b96626ec1ee8",
+        "dirty": true,
+        "url": "https://github.com/amanshah2711/cs285_fa2020_project.git"
+      },
+      {
+        "commit": "12fe53f72d161ce3ce9299c29b78b96626ec1ee8",
+        "dirty": true,
+        "url": "https://github.com/amanshah2711/cs285_fa2020_project.git"
+      },
+      {
+        "commit": "12fe53f72d161ce3ce9299c29b78b96626ec1ee8",
+        "dirty": true,
+        "url": "https://github.com/amanshah2711/cs285_fa2020_project.git"
+      },
+      {
+        "commit": "12fe53f72d161ce3ce9299c29b78b96626ec1ee8",
+        "dirty": true,
+        "url": "https://github.com/amanshah2711/cs285_fa2020_project.git"
+      },
+      {
+        "commit": "12fe53f72d161ce3ce9299c29b78b96626ec1ee8",
+        "dirty": true,
+        "url": "https://github.com/amanshah2711/cs285_fa2020_project.git"
+      },
+      {
+        "commit": "12fe53f72d161ce3ce9299c29b78b96626ec1ee8",
+        "dirty": true,
+        "url": "https://github.com/amanshah2711/cs285_fa2020_project.git"
+      }
+    ],
+    "sources": [
+      [
+        "__init__.py",
+        "_sources/__init___d41d8cd98f00b204e9800998ecf8427e.py"
+      ],
+      [
+        "common/__init__.py",
+        "_sources/__init___d41d8cd98f00b204e9800998ecf8427e.py"
+      ],
+      [
+        "common/utils.py",
+        "_sources/utils_f89dc4432b750b0e33f0765ad76a128b.py"
+      ],
+      [
+        "envs/__init__.py",
+        "_sources/__init___500ed4115d51bddd93195236aecaf725.py"
+      ],
+      [
+        "envs/gym_compete.py",
+        "_sources/gym_compete_475f881de29d29faae5f090aac5328f8.py"
+      ],
+      [
+        "envs/multi_agent.py",
+        "_sources/multi_agent_6a80b511b69241327a122ffec887c64a.py"
+      ],
+      [
+        "envs/observation_masking.py",
+        "_sources/observation_masking_e8a3081e806023847e55f498248fc601.py"
+      ],
+      [
+        "iterative_retrain.py",
+        "_sources/iterative_retrain_dff76c549e22e07d3504971c9e2ef644.py"
+      ],
+      [
+        "policies/__init__.py",
+        "_sources/__init___5a17d97d523e24cfbdb9a2ce9b0ad4ec.py"
+      ],
+      [
+        "policies/loader.py",
+        "_sources/loader_65ac5efda9c267246477b447d5f7b0c1.py"
+      ],
+      [
+        "policies/wrappers.py",
+        "_sources/wrappers_55906064adf5f4927465ccc115830955.py"
+      ],
+      [
+        "training/__init__.py",
+        "_sources/__init___d41d8cd98f00b204e9800998ecf8427e.py"
+      ],
+      [
+        "training/embedded_agents.py",
+        "_sources/embedded_agents_38194464d969fe0b609f04f25cfbbb9b.py"
+      ],
+      [
+        "training/logger.py",
+        "_sources/logger_9f492690cc54c88306ff53a72d1bb618.py"
+      ],
+      [
+        "training/lookback.py",
+        "_sources/lookback_25ff83d7b0b31c3033717b8fd5bfeb2f.py"
+      ],
+      [
+        "training/scheduling.py",
+        "_sources/scheduling_22f1baa796047ff4948ee273e577be20.py"
+      ],
+      [
+        "training/shaping_wrappers.py",
+        "_sources/shaping_wrappers_0afa7decb3df5131f261b32d4e94042e.py"
+      ]
+    ]
+  },
+  "fail_trace": [
+    "Traceback (most recent call last):\n",
+    "  File \"/Users/amanshah/opt/anaconda3/envs/285proj/lib/python3.7/site-packages/sacred/stdout_capturing.py\", line 163, in tee_output_fd\n    yield out  # let the caller do their printing\n",
+    "  File \"/Users/amanshah/opt/anaconda3/envs/285proj/lib/python3.7/site-packages/sacred/run.py\", line 238, in __call__\n    self.result = self.main_function(*args)\n",
+    "  File \"/Users/amanshah/opt/anaconda3/envs/285proj/lib/python3.7/site-packages/sacred/config/captured_function.py\", line 42, in captured_function\n    result = wrapped(*args, **kwargs)\n",
+    "  File \"/Users/amanshah/Desktop/cs285_fa2020_project/rlproj/iterative_retrain.py\", line 793, in train\n    train_fn = RL_ALGOS[rl_algo]\n",
+    "  File \"/Users/amanshah/opt/anaconda3/envs/285proj/lib/python3.7/site-packages/sacred/config/captured_function.py\", line 42, in captured_function\n    result = wrapped(*args, **kwargs)\n",
+    "  File \"/Users/amanshah/Desktop/cs285_fa2020_project/rlproj/iterative_retrain.py\", line 332, in ppo2\n    **kwargs,\n",
+    "  File \"/Users/amanshah/opt/anaconda3/envs/285proj/lib/python3.7/site-packages/sacred/config/captured_function.py\", line 42, in captured_function\n    result = wrapped(*args, **kwargs)\n",
+    "  File \"/Users/amanshah/Desktop/cs285_fa2020_project/rlproj/iterative_retrain.py\", line 259, in _stable\n    retrain_callback = RetrainCallback(embed_type=extra_info['embed_type'], embed_types=extra_info['embed_types'], embed_path=extra_info['embed_path'], embed_paths=extra_info['embed_paths'], embed_index=1-embed_index, lr=extra_info['lr'], out_dir=out_dir, cls=cls, rl_algo=extra_info['rl_algo'], total_timesteps=total_timesteps)\n",
+    "TypeError: __init__() missing 1 required positional argument: 'freq'\n",
+    "\nDuring handling of the above exception, another exception occurred:\n\n",
+    "Traceback (most recent call last):\n",
+    "  File \"/Users/amanshah/opt/anaconda3/envs/285proj/lib/python3.7/contextlib.py\", line 130, in __exit__\n    self.gen.throw(type, value, traceback)\n",
+    "  File \"/Users/amanshah/opt/anaconda3/envs/285proj/lib/python3.7/site-packages/sacred/stdout_capturing.py\", line 175, in tee_output_fd\n    tee_stdout.wait(timeout=1)\n",
+    "  File \"/Users/amanshah/opt/anaconda3/envs/285proj/lib/python3.7/subprocess.py\", line 1019, in wait\n    return self._wait(timeout=timeout)\n",
+    "  File \"/Users/amanshah/opt/anaconda3/envs/285proj/lib/python3.7/subprocess.py\", line 1645, in _wait\n    raise TimeoutExpired(self.args, timeout)\n",
+    "subprocess.TimeoutExpired: Command '['tee', '-a', '/var/folders/7h/tyyz67kx1js0s5x68q6zwd900000gn/T/tmpxrfxw703']' timed out after 1 seconds\n"
+  ],
+  "heartbeat": "2020-12-09T19:41:36.535827",
+  "host": {
+    "ENV": {},
+    "cpu": "Intel(R) Core(TM) i7-8850H CPU @ 2.60GHz",
+    "hostname": "Amans-MBP-2",
+    "os": [
+      "Darwin",
+      "Darwin-19.6.0-x86_64-i386-64bit"
+    ],
+    "python_version": "3.7.9"
+  },
+  "meta": {
+    "command": "train",
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [
+        "env_name=multicomp/SumoHumans-v0"
+      ],
+      "help": false,
+      "with": true
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2020-12-09T19:41:10.314144",
+  "status": "FAILED",
+  "stop_time": "2020-12-09T19:41:36.538186"
+}

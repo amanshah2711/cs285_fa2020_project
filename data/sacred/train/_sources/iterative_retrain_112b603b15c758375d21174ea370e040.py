@@ -97,22 +97,6 @@ class RetrainCallback(callbacks.BaseCallback):
             train_fn(env=env, total_timesteps=self.total_timesteps, retrain=False, out_dir=out_dir, logger=None,log_callbacks=[],save_callbacks=[], extra_info={}, checkpoint_interval=float('inf'))
             self.num_retrain += 1
 
-    def build_minimal_env(self):
-        multi_venv, our_idx = build_env(out_dir=self.out_dir, embed_index=self.embed_index, embed_types=self.embed_types)
-        log_callbacks = []
-        scheduler = Scheduler(annealer_dict={"lr": ConstantAnnealer(self.lr)})
-        multi_venv = maybe_embed_agent(
-            multi_venv,
-            our_idx,
-            scheduler,
-            embed_types=self.embed_types,
-            embed_paths=self.embed_paths,
-            log_callbacks=log_callbacks
-        )
-        single_venv = FlattenSingletonVecEnv(multi_venv)
-        return single_venv
-
-
 def _save(model, root_dir: str, save_callbacks: Iterable[SaveCallback]) -> None:
     os.makedirs(root_dir, exist_ok=True)
     model_path = osp.join(root_dir, "model.pkl")
@@ -272,7 +256,7 @@ def _stable(
     if retrain:
         swap_callback = SwapCallback(out_dir, random_opponent)
         swap_callback = callbacks.EveryNTimesteps(n_steps=checkpoint_interval, callback=swap_callback)
-        retrain_callback = RetrainCallback(embed_type=extra_info['embed_type'], embed_types=extra_info['embed_types'], embed_path=extra_info['embed_path'], embed_paths=extra_info['embed_paths'], embed_index=1-embed_index, lr=extra_info['lr'], out_dir=out_dir, cls=cls, rl_algo=extra_info['rl_algo'], total_timesteps=total_timesteps, freq = extra_info['retrain_freq'])
+        retrain_callback = RetrainCallback(embed_type=extra_info['embed_type'], embed_types=extra_info['embed_types'], embed_path=extra_info['embed_path'], embed_paths=extra_info['embed_paths'], embed_index=1-embed_index, lr=extra_info['lr'], out_dir=out_dir, cls=cls, rl_algo=extra_info['rl_algo'], total_timesteps=total_timesteps)
         callback_list.extend([swap_callback, retrain_callback])
         #callback_list.extend([ retrain_callback])
     callback = callbacks.CallbackList(callback_list)
@@ -395,7 +379,6 @@ def train_config():
     normalize_observations = True  # if normalize, then normalize environments observations too
     rl_args = dict()  # algorithm-specific arguments
     retrain=True
-    retrain_freq = 1
 
     # General
     checkpoint_interval = 3# save weights to disk after this many timesteps
@@ -770,7 +753,6 @@ def train(
         embed_types,
         embed_paths,
         adv_noise_params,
-        retrain_freq
 ):
     embed_types, embed_paths, adv_noise_params = resolve_embed(
         embed_type, embed_path, embed_types, embed_paths, adv_noise_params
@@ -823,8 +805,7 @@ def train(
             'embed_paths':embed_paths,
             'lr':learning_rate,
             'our_idx':our_idx,
-            'rl_algo': rl_algo,
-            'retrain_freq':retrain_freq
+            'rl_algo': rl_algo
         }
     )
     single_venv.close()

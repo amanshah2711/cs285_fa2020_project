@@ -1,0 +1,220 @@
+{
+  "artifacts": [],
+  "command": "train",
+  "experiment": {
+    "base_dir": "/Users/amanshah/Desktop/adversarial-policies/src/rlproj",
+    "dependencies": [
+      "gym==0.15.4",
+      "numpy==1.19.2",
+      "sacred==0.8.1",
+      "stable-baselines==2.10.1",
+      "tensorflow==1.15.0"
+    ],
+    "mainfile": "train.py",
+    "name": "train",
+    "repositories": [
+      {
+        "commit": "2ab9a717dd6a94f1314af526adbac1a59855048a",
+        "dirty": true,
+        "url": "https://github.com/HumanCompatibleAI/adversarial-policies.git"
+      },
+      {
+        "commit": "2ab9a717dd6a94f1314af526adbac1a59855048a",
+        "dirty": true,
+        "url": "https://github.com/HumanCompatibleAI/adversarial-policies.git"
+      },
+      {
+        "commit": "2ab9a717dd6a94f1314af526adbac1a59855048a",
+        "dirty": true,
+        "url": "https://github.com/HumanCompatibleAI/adversarial-policies.git"
+      },
+      {
+        "commit": "2ab9a717dd6a94f1314af526adbac1a59855048a",
+        "dirty": true,
+        "url": "https://github.com/HumanCompatibleAI/adversarial-policies.git"
+      },
+      {
+        "commit": "2ab9a717dd6a94f1314af526adbac1a59855048a",
+        "dirty": true,
+        "url": "https://github.com/HumanCompatibleAI/adversarial-policies.git"
+      },
+      {
+        "commit": "2ab9a717dd6a94f1314af526adbac1a59855048a",
+        "dirty": true,
+        "url": "https://github.com/HumanCompatibleAI/adversarial-policies.git"
+      },
+      {
+        "commit": "2ab9a717dd6a94f1314af526adbac1a59855048a",
+        "dirty": true,
+        "url": "https://github.com/HumanCompatibleAI/adversarial-policies.git"
+      },
+      {
+        "commit": "2ab9a717dd6a94f1314af526adbac1a59855048a",
+        "dirty": true,
+        "url": "https://github.com/HumanCompatibleAI/adversarial-policies.git"
+      },
+      {
+        "commit": "2ab9a717dd6a94f1314af526adbac1a59855048a",
+        "dirty": true,
+        "url": "https://github.com/HumanCompatibleAI/adversarial-policies.git"
+      },
+      {
+        "commit": "2ab9a717dd6a94f1314af526adbac1a59855048a",
+        "dirty": true,
+        "url": "https://github.com/HumanCompatibleAI/adversarial-policies.git"
+      },
+      {
+        "commit": "2ab9a717dd6a94f1314af526adbac1a59855048a",
+        "dirty": true,
+        "url": "https://github.com/HumanCompatibleAI/adversarial-policies.git"
+      },
+      {
+        "commit": "2ab9a717dd6a94f1314af526adbac1a59855048a",
+        "dirty": true,
+        "url": "https://github.com/HumanCompatibleAI/adversarial-policies.git"
+      },
+      {
+        "commit": "2ab9a717dd6a94f1314af526adbac1a59855048a",
+        "dirty": true,
+        "url": "https://github.com/HumanCompatibleAI/adversarial-policies.git"
+      },
+      {
+        "commit": "2ab9a717dd6a94f1314af526adbac1a59855048a",
+        "dirty": true,
+        "url": "https://github.com/HumanCompatibleAI/adversarial-policies.git"
+      },
+      {
+        "commit": "2ab9a717dd6a94f1314af526adbac1a59855048a",
+        "dirty": true,
+        "url": "https://github.com/HumanCompatibleAI/adversarial-policies.git"
+      },
+      {
+        "commit": "2ab9a717dd6a94f1314af526adbac1a59855048a",
+        "dirty": true,
+        "url": "https://github.com/HumanCompatibleAI/adversarial-policies.git"
+      },
+      {
+        "commit": "2ab9a717dd6a94f1314af526adbac1a59855048a",
+        "dirty": true,
+        "url": "https://github.com/HumanCompatibleAI/adversarial-policies.git"
+      }
+    ],
+    "sources": [
+      [
+        "__init__.py",
+        "_sources/__init___d41d8cd98f00b204e9800998ecf8427e.py"
+      ],
+      [
+        "common/__init__.py",
+        "_sources/__init___d41d8cd98f00b204e9800998ecf8427e.py"
+      ],
+      [
+        "common/utils.py",
+        "_sources/utils_f89dc4432b750b0e33f0765ad76a128b.py"
+      ],
+      [
+        "envs/__init__.py",
+        "_sources/__init___c9bee522c610c0c3d6507f75a6bca6e8.py"
+      ],
+      [
+        "envs/gym_compete.py",
+        "_sources/gym_compete_e4887aaf5b72668af554aee3f17e31c0.py"
+      ],
+      [
+        "envs/multi_agent.py",
+        "_sources/multi_agent_2ec3395fb4d3287899d4a751820a49cc.py"
+      ],
+      [
+        "envs/observation_masking.py",
+        "_sources/observation_masking_e8a3081e806023847e55f498248fc601.py"
+      ],
+      [
+        "policies/__init__.py",
+        "_sources/__init___5a17d97d523e24cfbdb9a2ce9b0ad4ec.py"
+      ],
+      [
+        "policies/loader.py",
+        "_sources/loader_d89a151e79c650b5595c054fd8fa91dd.py"
+      ],
+      [
+        "policies/wrappers.py",
+        "_sources/wrappers_4b681ab1adc5627710e8e442ee0b5df1.py"
+      ],
+      [
+        "train.py",
+        "_sources/train_f87fbb92cce96838e2faebd781e0bc07.py"
+      ],
+      [
+        "training/__init__.py",
+        "_sources/__init___d41d8cd98f00b204e9800998ecf8427e.py"
+      ],
+      [
+        "training/embedded_agents.py",
+        "_sources/embedded_agents_3be226932c1d7ca3b7a08cd676d44b4e.py"
+      ],
+      [
+        "training/logger.py",
+        "_sources/logger_ce6acc0481e93723eefc00bc82b53b10.py"
+      ],
+      [
+        "training/lookback.py",
+        "_sources/lookback_9d154cb28b3faf1d2209e28cc16320c8.py"
+      ],
+      [
+        "training/scheduling.py",
+        "_sources/scheduling_22f1baa796047ff4948ee273e577be20.py"
+      ],
+      [
+        "training/shaping_wrappers.py",
+        "_sources/shaping_wrappers_d68fff7ed8d4676079813924d1764735.py"
+      ]
+    ]
+  },
+  "heartbeat": "2020-12-09T19:38:07.677754",
+  "host": {
+    "ENV": {},
+    "cpu": "Intel(R) Core(TM) i7-8850H CPU @ 2.60GHz",
+    "hostname": "Amans-MBP-2",
+    "os": [
+      "Darwin",
+      "Darwin-19.6.0-x86_64-i386-64bit"
+    ],
+    "python_version": "3.7.9"
+  },
+  "meta": {
+    "command": "train",
+    "options": {
+      "--beat-interval": null,
+      "--capture": "sys",
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [
+        "env_name=multicomp/SumoHumans-v0",
+        "paper"
+      ],
+      "help": false,
+      "with": true
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2020-12-09T19:38:02.956841",
+  "status": "INTERRUPTED",
+  "stop_time": "2020-12-09T19:38:07.687744"
+}
