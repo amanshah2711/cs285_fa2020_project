@@ -69,6 +69,7 @@ class SwapCallback(callbacks.BaseCallback):
         import pdb; pdb.set_trace()
         new_opponent = self.opponent_sampler(potential_opps)
         item = self.model.get_env()._policy
+        import pdb; pdb.set_trace()
         load_params(item, os.path.join(self.model_dir, new_opponent))
 
 
@@ -271,7 +272,6 @@ def _stable(
     callback_list = [checkpoint_callback, log_callback]
     if retrain:
         swap_callback = SwapCallback(out_dir, random_opponent)
-        swap_callback = callbacks.EveryNTimesteps(n_steps=checkpoint_interval, callback=swap_callback)
         retrain_callback = RetrainCallback(embed_type=extra_info['embed_type'], embed_types=extra_info['embed_types'], embed_path=extra_info['embed_path'], embed_paths=extra_info['embed_paths'], embed_index=1-embed_index, lr=extra_info['lr'], out_dir=out_dir, cls=cls, rl_algo=extra_info['rl_algo'], total_timesteps=total_timesteps, freq = extra_info['retrain_freq'])
         callback_list.extend([swap_callback, retrain_callback])
         #callback_list.extend([ retrain_callback])
@@ -395,7 +395,7 @@ def train_config():
     normalize_observations = True  # if normalize, then normalize environments observations too
     rl_args = dict()  # algorithm-specific arguments
     retrain=True
-    retrain_freq = 1
+    retrain_freq = 30
 
     # General
     checkpoint_interval = 3# save weights to disk after this many timesteps
@@ -668,7 +668,6 @@ def single_wrappers(
             shaping_params=rew_shape_params,
             agent_idx=our_idx,
         )
-        import pdb; pdb.set_trace()
         log_callbacks.append(LoggerOnlyLogCallback(rew_shape_venv))
         single_venv = rew_shape_venv
 
@@ -806,7 +805,6 @@ def train(
         embed_paths=embed_paths,
         embed_types=embed_types,
     )
-    import pdb; pdb.set_trace()
 
     train_fn = RL_ALGOS[rl_algo]
     res = train_fn(
