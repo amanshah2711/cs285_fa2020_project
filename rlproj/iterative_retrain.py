@@ -68,7 +68,6 @@ class SwapCallback(callbacks.BaseCallback):
         potential_opps = [item for item in os.listdir(self.model_dir) if item != 'mon'] #exclude monitoring
         new_opponent = self.opponent_sampler(potential_opps)
         item = self.model.get_env()._policy
-        import pdb; pdb.set_trace()
         load_params(item, os.path.join(self.model_dir, new_opponent))
 
 
@@ -85,7 +84,7 @@ class RetrainCallback(callbacks.BaseCallback):
         self.embed_index = 1 - embed_index
         self.cls = cls
         self.rl_algo = rl_algo
-        self.total_timesteps = int((total_timesteps * 0.03) // 100)
+        self.total_timesteps = int((total_timesteps * 0.03) // 100) #TODO: Make this configurable?
         self.num_retrain = 1
         self.freq = freq
 
@@ -99,9 +98,9 @@ class RetrainCallback(callbacks.BaseCallback):
 
     def build_minimal_env(self):
         multi_venv, our_idx = build_env(out_dir=self.out_dir, embed_index=self.embed_index, embed_types=self.embed_types)
-        log_callbacks = []
+        log_callbacks, save_callbacks = [], []
         scheduler = Scheduler(annealer_dict={"lr": ConstantAnnealer(self.lr)})
-        self.embed_path = sorted([item for item in os.listdir(self.out_dir) if 'retrain' not in item and item != 'mon'])[-1]
+        self.embed_path = os.path.join(self.out_dir, sorted([item for item in os.listdir(self.out_dir) if 'retrain' not in item and item != 'mon'])[-1])
         self.embed_paths = [self.embed_path]
         multi_venv = maybe_embed_agent(
             multi_venv,
@@ -112,6 +111,7 @@ class RetrainCallback(callbacks.BaseCallback):
             log_callbacks=log_callbacks
         )
         single_venv = FlattenSingletonVecEnv(multi_venv)
+        single_venv = single_wrappers(single_venv, scheduler, our_idx, embed_paths=self.embed_paths, embed_types=self.embed_types, log_callbacks=log_callbacks, save_callbacks=save_callbacks)
         return single_venv
 
 
