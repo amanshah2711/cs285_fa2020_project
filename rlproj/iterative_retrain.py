@@ -66,7 +66,6 @@ class SwapCallback(callbacks.BaseCallback):
 
     def _on_rollout_end(self) -> None:
         potential_opps = [item for item in os.listdir(self.model_dir) if item != 'mon'] #exclude monitoring
-        import pdb; pdb.set_trace()
         new_opponent = self.opponent_sampler(potential_opps)
         item = self.model.get_env()._policy
         import pdb; pdb.set_trace()
@@ -102,6 +101,8 @@ class RetrainCallback(callbacks.BaseCallback):
         multi_venv, our_idx = build_env(out_dir=self.out_dir, embed_index=self.embed_index, embed_types=self.embed_types)
         log_callbacks = []
         scheduler = Scheduler(annealer_dict={"lr": ConstantAnnealer(self.lr)})
+        self.embed_path = sorted([item for item in os.listdir(self.out_dir) if 'retrain' not in item and item != 'mon'])[-1]
+        self.embed_paths = [self.embed_path]
         multi_venv = maybe_embed_agent(
             multi_venv,
             our_idx,
