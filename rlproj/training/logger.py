@@ -77,15 +77,18 @@ def tb_layout():
     return summary_lib.custom_scalar_pb(layout_pb2.Layout(category=categories))
 
 
-def setup_logger(out_dir="results", exp_name="test", output_formats=None):
+def setup_logger(out_dir="results", exp_name="test", output_formats=None, retrain=False):
     timestamp = utils.make_timestamp()
     exp_name = exp_name.replace("/", "_")  # environment names can contain /'s
     filename = "{}-{}".format(timestamp, exp_name)[0:255]  # Linux has filename limit of 255
-    out_dir = osp.join(out_dir, filename)
-    os.makedirs(out_dir, exist_ok=True)
-
-    logger.configure(folder=osp.join(out_dir, "rl"), format_strs=["tensorboard", "stdout"])
-    logger_instance = logger.Logger.CURRENT
+    if retrain:
+        logger.configure(folder=osp.join(out_dir, "rl", exp_name), format_strs=["tensorboard", "stdout"])
+        logger_instance = logger.Logger.CURRENT
+    else:
+        out_dir = osp.join(out_dir, filename)
+        os.makedirs(out_dir, exist_ok=True)
+        logger.configure(folder=osp.join(out_dir, "rl"), format_strs=["tensorboard", "stdout"])
+        logger_instance = logger.Logger.CURRENT
 
     if output_formats is not None:
         logger_instance.output_formats += output_formats

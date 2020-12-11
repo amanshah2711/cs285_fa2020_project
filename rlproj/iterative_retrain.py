@@ -75,6 +75,7 @@ class RetrainCallback(callbacks.BaseCallback):
 
     def __init__(self, total_timesteps, lr, embed_type, embed_path, rl_algo, embed_types, embed_paths, embed_index, out_dir, freq, cls, *args, **kwargs):
         super(RetrainCallback, self).__init__(*args, **kwargs)
+        self.orig_out_dir = out_dir
         self.out_dir = os.path.join(out_dir, 'checkpoint')
         self.embed_path = embed_path
         self.embed_paths = embed_paths
@@ -90,15 +91,17 @@ class RetrainCallback(callbacks.BaseCallback):
 
     def _on_step(self) -> bool:
         if self.n_calls % self.freq == 0:
-            env = self.build_minimal_env()
+            env, log_callbacks, save_callbacks = self.build_minimal_env()
             train_fn = RL_ALGOS[self.rl_algo]
             out_dir = os.path.join(self.out_dir, 'retrain_' + str(self.num_retrain))
-            train_fn(env=env, total_timesteps=self.total_timesteps, retrain=False, out_dir=out_dir, logger=None,log_callbacks=[],save_callbacks=[], extra_info={}, checkpoint_interval=float('inf'))
+            train_fn(env=env, total_timesteps=self.total_timesteps, retrain=False, out_dir=out_dir, logger=self.logger,log_callbacks=[],save_callbacks=save_callbacks, extra_info={}, checkpoint_interval=float('inf'))
             self.num_retrain += 1
 
     def build_minimal_env(self):
-        multi_venv, our_idx = build_env(out_dir=self.out_dir, embed_index=self.embed_index, embed_types=self.embed_types)
         log_callbacks, save_callbacks = [], []
+        _, self.logger = setup_logger(self.orig_out_dir, 'adversary_' + str(self.num_retrain), output_formats=None, retrain=True)
+        multi_venv, our_idx = build_env(out_dir=self.out_dir, embed_index=self.embed_index, embed_types=self.embed_types)
+        multi_venv = multi_wrappers(multi_venv, log_callbacks=log_callbacks)
         scheduler = Scheduler(annealer_dict={"lr": ConstantAnnealer(self.lr)})
         self.embed_path = os.path.join(self.out_dir, sorted([item for item in os.listdir(self.out_dir) if 'retrain' not in item and item != 'mon'])[-1])
         self.embed_paths = [self.embed_path]
@@ -112,7 +115,7 @@ class RetrainCallback(callbacks.BaseCallback):
         )
         single_venv = FlattenSingletonVecEnv(multi_venv)
         single_venv = single_wrappers(single_venv, scheduler, our_idx, embed_paths=self.embed_paths, embed_types=self.embed_types, log_callbacks=log_callbacks, save_callbacks=save_callbacks)
-        return single_venv
+        return single_venv, log_callbacks, save_callbacks
 
 
 def _save(model, root_dir: str, save_callbacks: Iterable[SaveCallback]) -> None:
@@ -372,7 +375,7 @@ def train_config():
     # Environment
     env_name = "multicomp/SumoAnts-v0"  # Gym environment ID
     num_env = 8  # number of environments to run in parallel
-    total_timesteps = 4096  # total number of timesteps to training for
+    total_timesteps = 20000000  # total number of timesteps to training for
 
     # Embedded Agent Config
     # Typically this is the victim, but for victim hardening this could be the adversary
@@ -399,11 +402,12 @@ def train_config():
     retrain_freq = 30
 
     # General
-    checkpoint_interval = 3# save weights to disk after this many timesteps
-    log_interval = 1  # log statistics to disk after this many timesteps
+    checkpoint_interval = 30# save weights to disk after this many timesteps
+    log_interval = 8# log statistics to disk after this many timesteps
     log_output_formats = None  # custom output formats for logging
     debug = False  # debug mode; may run more slowly
     seed = 0  # random seed
+
     _ = locals()  # quieten flake8 unused variable warning
     del _
 
