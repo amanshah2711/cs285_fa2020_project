@@ -285,7 +285,7 @@ def _stable(
         callback_list.extend([retrain_callback])
     callback = callbacks.CallbackList(callback_list)
 
-    model.learn(total_timesteps=total_timesteps, log_interval=1, callback=callback)
+    model.learn(total_timesteps=total_timesteps, log_interval=log_interval, callback=callback)
     if retrain:
         final_path = osp.join(out_dir, "final_model")
     else:
