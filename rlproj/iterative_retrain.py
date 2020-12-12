@@ -52,6 +52,7 @@ def random_opponent(options):
 
 
 def load_params(model,  loc):
+    os.makedirs(loc, exist_ok=True)
     path = os.path.join(loc, 'model.pkl')
     data, params = BaseRLModel._load_from_file(path)
     model.load_parameters(params)
