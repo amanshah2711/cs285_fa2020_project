@@ -85,7 +85,6 @@ class RetrainCallback(callbacks.BaseCallback):
         self.embed_index = 1 - embed_index
         self.cls = cls
         self.rl_algo = rl_algo
-        self.total_timesteps = int((total_timesteps * 0.03) // 100) #TODO: Make this configurable?
         self.num_retrain = 1
         self.freq = freq
 
@@ -94,7 +93,9 @@ class RetrainCallback(callbacks.BaseCallback):
             env, log_callbacks, save_callbacks = self.build_minimal_env()
             train_fn = RL_ALGOS[self.rl_algo]
             out_dir = os.path.join(self.out_dir, 'retrain_' + str(self.num_retrain))
-            train_fn(env=env, total_timesteps=self.total_timesteps, retrain=False, out_dir=out_dir, logger=self.logger,log_callbacks=[],save_callbacks=save_callbacks, extra_info={}, checkpoint_interval=float('inf'))
+            train_fn(env=env, total_timesteps=int(self.n_calls * 0.03), retrain=False, out_dir=out_dir, logger=self.logger,log_callbacks=[],save_callbacks=save_callbacks, extra_info={}, checkpoint_interval=float('inf'), self_play=False)
+            item = self.model.get_env()._policy
+            load_params(item, out_dir)
             self.num_retrain += 1
 
     def build_minimal_env(self):
@@ -245,6 +246,7 @@ def _stable(
         checkpoint_interval,
         extra_info,
         retrain,
+        self_play=True,
         **kwargs,
 ):
     kwargs = dict(env=env, verbose=1 if not debug else 2, **kwargs, **rl_args)
@@ -274,11 +276,13 @@ def _stable(
         n_steps=log_interval, callback=callbacks.CallbackList(log_callbacks)
     )
     callback_list = [checkpoint_callback, log_callback]
-    if retrain:
+    if self_play:
         swap_callback = SwapCallback(out_dir, random_opponent)
+        callback_list.append(swap_callback)
+
+    if retrain:
         retrain_callback = RetrainCallback(embed_type=extra_info['embed_type'], embed_types=extra_info['embed_types'], embed_path=extra_info['embed_path'], embed_paths=extra_info['embed_paths'], embed_index=1-embed_index, lr=extra_info['lr'], out_dir=out_dir, cls=cls, rl_algo=extra_info['rl_algo'], total_timesteps=total_timesteps, freq = extra_info['retrain_freq'])
-        callback_list.extend([swap_callback, retrain_callback])
-        #callback_list.extend([ retrain_callback])
+        callback_list.extend([retrain_callback])
     callback = callbacks.CallbackList(callback_list)
 
     model.learn(total_timesteps=total_timesteps, log_interval=1, callback=callback)
