@@ -93,7 +93,7 @@ class RetrainCallback(callbacks.BaseCallback):
         env, log_callbacks, save_callbacks = self.build_minimal_env()
         train_fn = RL_ALGOS[self.rl_algo]
         out_dir = os.path.join(self.out_dir, 'retrain_' + str(self.num_retrain))
-        train_fn(env=env, total_timesteps=int(self.n_calls * 0.03), retrain=False, out_dir=out_dir, logger=self.logger,log_callbacks=[],save_callbacks=save_callbacks, extra_info={}, checkpoint_interval=float('inf'), self_play=False)
+        train_fn(env=env, total_timesteps=int(self.n_calls * 0.03), retrain=False, out_dir=out_dir, logger=self.logger,log_callbacks=log_callbacks,save_callbacks=save_callbacks, extra_info={}, checkpoint_interval=float('inf'), self_play=False)
         item = self.model.get_env()._policy
         load_params(item, out_dir)
         self.num_retrain += 1
