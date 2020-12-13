@@ -52,7 +52,6 @@ def random_opponent(options):
 
 
 def load_params(model,  loc):
-    os.makedirs(loc, exist_ok=True)
     path = os.path.join(loc, 'model.pkl')
     data, params = BaseRLModel._load_from_file(path)
     model.load_parameters(params)
@@ -63,6 +62,7 @@ class SwapCallback(callbacks.BaseCallback):
     def __init__(self, model_dir: str, opponent_sampler, *args, **kwargs) -> None:
         super(SwapCallback, self).__init__(*args,**kwargs)
         self.model_dir = os.path.join(model_dir, 'checkpoint')
+        os.makedirs(self.model_dir, exist_ok=True)
         self.opponent_sampler = opponent_sampler
 
     def _on_rollout_end(self) -> None:
@@ -90,14 +90,13 @@ class RetrainCallback(callbacks.BaseCallback):
         self.freq = freq
 
     def _on_step(self) -> bool:
-        if self.n_calls % self.freq == 0:
-            env, log_callbacks, save_callbacks = self.build_minimal_env()
-            train_fn = RL_ALGOS[self.rl_algo]
-            out_dir = os.path.join(self.out_dir, 'retrain_' + str(self.num_retrain))
-            train_fn(env=env, total_timesteps=int(self.n_calls * 0.03), retrain=False, out_dir=out_dir, logger=self.logger,log_callbacks=[],save_callbacks=save_callbacks, extra_info={}, checkpoint_interval=float('inf'), self_play=False)
-            item = self.model.get_env()._policy
-            load_params(item, out_dir)
-            self.num_retrain += 1
+        env, log_callbacks, save_callbacks = self.build_minimal_env()
+        train_fn = RL_ALGOS[self.rl_algo]
+        out_dir = os.path.join(self.out_dir, 'retrain_' + str(self.num_retrain))
+        train_fn(env=env, total_timesteps=int(self.n_calls * 0.03), retrain=False, out_dir=out_dir, logger=self.logger,log_callbacks=[],save_callbacks=save_callbacks, extra_info={}, checkpoint_interval=float('inf'), self_play=False)
+        item = self.model.get_env()._policy
+        load_params(item, out_dir)
+        self.num_retrain += 1
 
     def build_minimal_env(self):
         log_callbacks, save_callbacks = [], []
@@ -282,11 +281,11 @@ def _stable(
         callback_list.append(swap_callback)
 
     if retrain:
-        retrain_callback = RetrainCallback(embed_type=extra_info['embed_type'], embed_types=extra_info['embed_types'], embed_path=extra_info['embed_path'], embed_paths=extra_info['embed_paths'], embed_index=1-embed_index, lr=extra_info['lr'], out_dir=out_dir, cls=cls, rl_algo=extra_info['rl_algo'], total_timesteps=total_timesteps, freq = extra_info['retrain_freq'])
+        retrain_callback = callbacks.EveryNTimesteps(n_steps=extra_info['retrain_freq'], callback=RetrainCallback(embed_type=extra_info['embed_type'], embed_types=extra_info['embed_types'], embed_path=extra_info['embed_path'], embed_paths=extra_info['embed_paths'], embed_index=1-embed_index, lr=extra_info['lr'], out_dir=out_dir, cls=cls, rl_algo=extra_info['rl_algo'], total_timesteps=total_timesteps, freq = extra_info['retrain_freq']))
         callback_list.extend([retrain_callback])
     callback = callbacks.CallbackList(callback_list)
 
-    model.learn(total_timesteps=total_timesteps, log_interval=log_interval, callback=callback)
+    model.learn(total_timesteps=total_timesteps, log_interval=1, callback=callback)
     if retrain:
         final_path = osp.join(out_dir, "final_model")
     else:
