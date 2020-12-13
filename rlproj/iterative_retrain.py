@@ -90,13 +90,14 @@ class RetrainCallback(callbacks.BaseCallback):
         self.freq = freq
 
     def _on_step(self) -> bool:
-        env, log_callbacks, save_callbacks = self.build_minimal_env()
-        train_fn = RL_ALGOS[self.rl_algo]
-        out_dir = os.path.join(self.out_dir, 'retrain_' + str(self.num_retrain))
-        train_fn(env=env, total_timesteps=int(self.n_calls * 0.03), retrain=False, out_dir=out_dir, logger=self.logger,log_callbacks=log_callbacks,save_callbacks=save_callbacks, extra_info={}, checkpoint_interval=float('inf'), self_play=False)
-        item = self.model.get_env()._policy
-        load_params(item, out_dir)
-        self.num_retrain += 1
+        if (self.n_calls * 8) % self.freq == 0:
+            env, log_callbacks, save_callbacks = self.build_minimal_env()
+            train_fn = RL_ALGOS[self.rl_algo]
+            out_dir = os.path.join(self.out_dir, 'retrain_' + str(self.num_retrain))
+            train_fn(env=env, total_timesteps=int(self.n_calls * 0.03), retrain=False, out_dir=out_dir, logger=self.logger,log_callbacks=log_callbacks,save_callbacks=save_callbacks, extra_info={}, checkpoint_interval=float('inf'), self_play=False)
+            item = self.model.get_env()._policy
+            load_params(item, out_dir)
+            self.num_retrain += 1
 
     def build_minimal_env(self):
         log_callbacks, save_callbacks = [], []
@@ -281,7 +282,7 @@ def _stable(
         callback_list.append(swap_callback)
 
     if retrain:
-        retrain_callback = callbacks.EveryNTimesteps(n_steps=extra_info['retrain_freq'], callback=RetrainCallback(embed_type=extra_info['embed_type'], embed_types=extra_info['embed_types'], embed_path=extra_info['embed_path'], embed_paths=extra_info['embed_paths'], embed_index=1-embed_index, lr=extra_info['lr'], out_dir=out_dir, cls=cls, rl_algo=extra_info['rl_algo'], total_timesteps=total_timesteps, freq = extra_info['retrain_freq']))
+        retrain_callback = RetrainCallback(embed_type=extra_info['embed_type'], embed_types=extra_info['embed_types'], embed_path=extra_info['embed_path'], embed_paths=extra_info['embed_paths'], embed_index=1-embed_index, lr=extra_info['lr'], out_dir=out_dir, cls=cls, rl_algo=extra_info['rl_algo'], total_timesteps=total_timesteps, freq = extra_info['retrain_freq'])
         callback_list.extend([retrain_callback])
     callback = callbacks.CallbackList(callback_list)
 
