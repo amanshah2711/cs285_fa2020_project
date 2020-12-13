@@ -377,7 +377,7 @@ def train_config():
     exp_name = "default"  # name of experiment
 
     # Environment
-    env_name = "multicomp/SumoHumans-v0"  # Gym environment ID
+    env_name = "multicomp/SumoAnts-v0"  # Gym environment ID
     num_env = 8  # number of environments to run in parallel
     total_timesteps = 10000000  # total number of timesteps to training for
 
