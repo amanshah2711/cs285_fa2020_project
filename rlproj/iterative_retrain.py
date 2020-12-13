@@ -377,9 +377,9 @@ def train_config():
     exp_name = "default"  # name of experiment
 
     # Environment
-    env_name = "multicomp/SumoAnts-v0"  # Gym environment ID
+    env_name = "multicomp/SumoHumans-v0"  # Gym environment ID
     num_env = 8  # number of environments to run in parallel
-    total_timesteps = 20000000  # total number of timesteps to training for
+    total_timesteps = 10000000  # total number of timesteps to training for
 
     # Embedded Agent Config
     # Typically this is the victim, but for victim hardening this could be the adversary
@@ -397,17 +397,17 @@ def train_config():
     # RL Algorithm Hyperparameters
     rl_algo = "ppo2"  # RL algorithm to use
     policy = "MlpPolicy"  # policy network type
-    batch_size = 2048  # batch size
+    batch_size = 16384  # batch size
     learning_rate = 3e-4  # learning rate
     normalize = True  # normalize environment reward
     normalize_observations = True  # if normalize, then normalize environments observations too
     rl_args = dict()  # algorithm-specific arguments
     retrain=True
-    retrain_freq = 30
+    retrain_freq = 50000 #change later
 
     # General
-    checkpoint_interval = 30# save weights to disk after this many timesteps
-    log_interval = 8# log statistics to disk after this many timesteps
+    checkpoint_interval = 5000 # save weights to disk after this many timesteps
+    log_interval = 2048 # log statistics to disk after this many timesteps
     log_output_formats = None  # custom output formats for logging
     debug = False  # debug mode; may run more slowly
     seed = 0  # random seed
