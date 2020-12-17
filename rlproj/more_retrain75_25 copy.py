@@ -59,7 +59,7 @@ def more_retrain(options):
     if retrains == []:
         return random_opponent(checkpoints)
     else:
-        even = np.random.choice(checkpoints, size=9*len(retrains))
+        even = np.random.choice(checkpoints, size=3*len(retrains))
         options = list(retrains) + list(even)
     return np.random.choice(options)
 

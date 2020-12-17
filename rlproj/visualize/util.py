@@ -11,13 +11,14 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from rlproj import train
+from rlproj import adversarial_train
 from rlproj.configs import DATA_LOCATION
 from rlproj.envs import VICTIM_INDEX, gym_compete
 from rlproj.visualize import styles
 
 logger = logging.getLogger("rlproj.visualize.util")
 
+train = adversarial_train
 # Data loading & manipulation
 
 

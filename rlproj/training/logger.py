@@ -102,3 +102,4 @@ def setup_logger(out_dir="results", exp_name="test", output_formats=None, retrai
             writer.Flush()
 
     return out_dir, logger_instance
+
